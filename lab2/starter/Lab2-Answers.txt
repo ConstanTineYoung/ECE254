@@ -2,41 +2,50 @@
 1.1 (1 point) In an RTX application, how to declare a memory pool named "mympool" that has 20 blocks 
     of memory with block size of 12 bytes?
 -----------------------------------------------------------------------------------------------------
+_declare_box(mpool,12,20);
 
 
 1.2 (1 point) Write one line of code to initialize the "mympool".
 -----------------------------------------------------------------------------------------------------
+_init_box (mpool, sizeof(mpool), 12);
 
 
 1.3 (1 point) What is the corresponding kernel function of _alloc_box()?
 -----------------------------------------------------------------------------------------------------
+void *rt_alloc_box(void *mem_pool)
 
 
 1.4 (1 point) What is the corresponding kernel function of _free_box()?
 -----------------------------------------------------------------------------------------------------
+int rt_free_box(void *mem_pool, void *box)
 
 
 2. (2 points) Read the rt_TypeDef.h file. What is the purpose of ret_val in the struct OS_TCB?
 -----------------------------------------------------------------------------------------------------
+Return value upon completion of a wait
 
 
 3. Read the rt_List.c file and answer the following questions:
     You may want to further explore other functions in the rt_List.c file.
 3.1 (2 points) What does the rt_put_prio() function do?
 -----------------------------------------------------------------------------------------------------
+Put a task into a list of tasks that are ordered by the task priority in descending order (P_TCB p_task->prio)
 
 
 3.2 (2 points) What does the rt_get_first() function do?
 -----------------------------------------------------------------------------------------------------
+Gets the task at the head of the list of tasks that are ordered by task priority. The task at the head of the list has the highest priority.
 
 
 4. Read the rt_Task.c file and answer the following questions:
 4.1 (2 points) What does the rt_block() function do?
 -----------------------------------------------------------------------------------------------------
+Blocks the running task and chooses the next ready task. A timeout is specified to choose how long to delay the running task for, and the state of the blocked task is also specified. 
 
 
 4.2 (2 points) What does the rt_dispatch() function do?
 -----------------------------------------------------------------------------------------------------
+Dispatch next task if any identified or dispatch highest ready task. Will task switch if the task that is passed in has a higher priority than what is already running. If the next task is NULL, the head of the prio queue (highest priority task) will be switched to. If the next task that is passed in has a lower priority than what is already running then the task gets inserted into the priority queue.
 
 
 5. (4 points) How to set the return value of a function becomes a bit tricky when context
@@ -50,10 +59,12 @@
     functions isr_mbx_receive() and rt_mbx_psh() for the purpose of completing this
     assignment.
 -----------------------------------------------------------------------------------------------------
-
+The return value of a task can be set through the ret_val field in the P_TCB struct.
+So, one task can set the return value of another task through this field. 
+This is how the function can return OS_R_MBX without explicitly declaring it.
 
 6. (2 points) To block a task, you will need to create a queue that the blocked tasks
     can stay. There are two global queues for now in the kernel and they are os_rdy and
     os_dly. What data structure do these two queues use?
 -----------------------------------------------------------------------------------------------------
-
+-These queues use the OS_XCB struct.
